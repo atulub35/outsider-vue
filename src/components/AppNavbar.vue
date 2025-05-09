@@ -18,6 +18,10 @@
       <v-icon>mdi-chat</v-icon>
     </v-btn>
 
+    <v-btn v-if="isAuthenticated" to="/generate-image" icon>
+      <v-icon>mdi-image-edit</v-icon>
+    </v-btn>
+
     <v-btn v-if="isAuthenticated" @click="handleLogout" icon>
       <v-icon>mdi-logout</v-icon>
     </v-btn>

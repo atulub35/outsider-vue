@@ -12,7 +12,7 @@ import LoginView from '../views/LoginView.vue'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ChatView from '../views/ChatView.vue'
-import ImageGenerateView from '../views/ImageGenerateView.vue'
+import AIImageGenerator from '../pages/AIImageGenerator.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,7 +42,7 @@ const router = createRouter({
     {
       path: '/generate-image',
       name: 'generate-image',
-      component: ImageGenerateView,
+      component: AIImageGenerator,
       meta: { requiresAuth: true }
     }
   ]
