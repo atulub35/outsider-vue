@@ -12,10 +12,8 @@ export function useAxios() {
     : "http://localhost:3001",
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-    },
-    withCredentials: true // Enable sending cookies in cross-origin requests
+      'Content-Type': 'application/json'
+    }
   })
 
   // Add request interceptor to add auth token and CSRF token

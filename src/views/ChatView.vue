@@ -1,6 +1,6 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row class="fill-height">
+  <v-container fluid class="">
+    <v-row class="">
       <v-col cols="12" class="d-flex flex-column">
         <v-card class="flex-grow-1 d-flex flex-column">
           <v-toolbar color="primary" dark>

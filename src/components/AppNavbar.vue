@@ -37,11 +37,12 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 import axios from 'axios'
+import { useAxios } from '@/composables/useAxios'
 
 const router = useRouter()
 const theme = useTheme()
 const isDark = ref(theme.global.current.value.dark)
-
+const { apiDelete } = useAxios()
 const isAuthenticated = computed(() => {
   return !!localStorage.getItem('auth_token')
 })
@@ -54,7 +55,7 @@ const toggleTheme = () => {
 
 const handleLogout = async () => {
   try {
-    await axios.delete('/users/sign_out')
+    await apiDelete('/users/sign_out')
     localStorage.removeItem('auth_token')
     router.push('/login')
   } catch (error) {

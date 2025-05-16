@@ -1,7 +1,9 @@
 <template>
   <v-bottom-navigation
     v-model="active"
-    color="primary"
+    :bg-color="color"
+    color="white"
+    mode="shift"
     grow
     class="bottom-nav"
   >
@@ -12,7 +14,7 @@
 
     <v-btn value="chat" to="/chat">
       <v-icon>mdi-chat</v-icon>
-      <span>Chat</span>
+      <span>AI Chat</span>
     </v-btn>
 
     <v-btn value="generate-image" to="/generate-image">
@@ -25,6 +27,7 @@
       <span>Profile</span>
     </v-btn>
   </v-bottom-navigation>
+  
 </template>
 
 <script setup>
@@ -33,7 +36,16 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const active = ref('home')
-
+const color = computed(() => {
+  switch (active.value) {
+    case 'home': return 'blue-grey'
+    case 'chat': return 'teal'
+    case 'generate-image': return 'brown'
+    case 'profile': return 'indigo'
+    default: return 'blue-grey'
+  }
+})
+  
 // Update active tab based on current route
 watch(() => route.path, (newPath) => {
   if (newPath === '/') active.value = 'home'
