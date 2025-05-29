@@ -1,79 +1,131 @@
-# Vuetify (Default)
+# Outsider - AI Assistant Web Application
 
-This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
+Outsider is a modern, responsive Vue.js application that provides AI-powered features including chat conversations and image generation. Built with Vue 3 and Vuetify 3, it offers a beautiful user interface with light and dark theme support.
 
-## ❗️ Important Links
+## 🌟 Features
 
-- 📄 [Docs](https://vuetifyjs.com/)
-- 🚨 [Issues](https://issues.vuetifyjs.com/)
-- 🏬 [Store](https://store.vuetifyjs.com/)
-- 🎮 [Playground](https://play.vuetifyjs.com/)
-- 💬 [Discord](https://community.vuetifyjs.com)
+- **AI Chat**: Engage in natural language conversations with an AI assistant
+- **AI Image Generation**: Create images from text descriptions or modify existing images
+- **User Authentication**: Secure login and registration system with JWT authentication
+- **Responsive Design**: Works seamlessly on mobile and desktop with dedicated mobile navigation
+- **Theme Switching**: Toggle between light and dark modes with automatic theme persistence
+- **Backend Integration**: Full API integration with a Ruby on Rails backend
 
-## 💿 Install
+## 🚀 Technology Stack
 
-Set up your project using your preferred package manager. Use the corresponding command to install the dependencies:
+- **Frontend Framework**: Vue 3 with Composition API
+- **UI Library**: Vuetify 3 for Material Design components
+- **State Management**: Vue's reactive system for local state
+- **Routing**: Vue Router with automatic route generation
+- **HTTP Client**: Axios for API communication
+- **Build Tool**: Vite for lightning-fast development experience
 
-| Package Manager                                                | Command        |
-|---------------------------------------------------------------|----------------|
-| [yarn](https://yarnpkg.com/getting-started)                   | `yarn install` |
-| [npm](https://docs.npmjs.com/cli/v7/commands/npm-install)     | `npm install`  |
-| [pnpm](https://pnpm.io/installation)                          | `pnpm install` |
-| [bun](https://bun.sh/#getting-started)                        | `bun install`  |
+## 🛠️ Project Setup
 
-After completing the installation, your environment is ready for Vuetify development.
+### Prerequisites
 
-## ✨ Features
+- Node.js (v16 or higher recommended)
+- Yarn, NPM, or PNPM package manager
 
-- 🖼️ **Optimized Front-End Stack**: Leverage the latest Vue 3 and Vuetify 3 for a modern, reactive UI development experience. [Vue 3](https://v3.vuejs.org/) | [Vuetify 3](https://vuetifyjs.com/en/)
-- 🗃️ **State Management**: Integrated with [Pinia](https://pinia.vuejs.org/), the intuitive, modular state management solution for Vue.
-- 🚦 **Routing and Layouts**: Utilizes Vue Router for SPA navigation and vite-plugin-vue-layouts for organizing Vue file layouts. [Vue Router](https://router.vuejs.org/) | [vite-plugin-vue-layouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts)
-- ⚡ **Next-Gen Tooling**: Powered by Vite, experience fast cold starts and instant HMR (Hot Module Replacement). [Vite](https://vitejs.dev/)
-- 🧩 **Automated Component Importing**: Streamline your workflow with unplugin-vue-components, automatically importing components as you use them. [unplugin-vue-components](https://github.com/antfu/unplugin-vue-components)
+### Installation
 
-These features are curated to provide a seamless development experience from setup to deployment, ensuring that your Vuetify application is both powerful and maintainable.
-
-## 💡 Usage
-
-This section covers how to start the development server and build your project for production.
-
-### Starting the Development Server
-
-To start the development server with hot-reload, run the following command. The server will be accessible at [http://localhost:3000](http://localhost:3000):
-
+1. Clone the repository
 ```bash
-yarn dev
+git clone https://github.com/yourusername/outsider-vue.git
+cd outsider-vue
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+2. Install dependencies
+```bash
+yarn install
+# or
+npm install
+```
 
-> Add NODE_OPTIONS='--no-warnings' to suppress the JSON import warnings that happen as part of the Vuetify import mapping. If you are on Node [v21.3.0](https://nodejs.org/en/blog/release/v21.3.0) or higher, you can change this to NODE_OPTIONS='--disable-warning=5401'. If you don't mind the warning, you can remove this from your package.json dev script.
+3. Create a `.env` file in the root directory (optional)
+```
+VITE_API_URL=http://your-backend-url.com
+```
+
+### Development
+
+Start the development server:
+```bash
+yarn dev
+# or
+npm run dev
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000)
 
 ### Building for Production
 
-To build your project for production, use:
-
 ```bash
 yarn build
+# or
+npm run build
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+The built files will be in the `dist` directory, ready for deployment.
 
-Once the build process is completed, your application will be ready for deployment in a production environment.
+## 📁 Project Structure
 
-## 💪 Support Vuetify Development
+```
+outsider-vue/
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images, fonts, etc.
+│   ├── components/      # Reusable Vue components
+│   ├── composables/     # Composition API functions
+│   ├── layouts/         # Page layouts
+│   ├── pages/           # Page components (auto-routed)
+│   ├── plugins/         # Vue plugins
+│   ├── router/          # Vue Router configuration
+│   ├── services/        # API services
+│   ├── stores/          # State management
+│   ├── styles/          # Global CSS/SCSS
+│   ├── views/           # View components
+│   ├── App.vue          # Root component
+│   └── main.js          # Application entry point
+├── .env                 # Environment variables
+├── index.html           # Entry HTML file
+├── package.json         # Project dependencies
+└── vite.config.mjs      # Vite configuration
+```
 
-This project is built with [Vuetify](https://vuetifyjs.com/en/), a UI Library with a comprehensive collection of Vue components. Vuetify is an MIT licensed Open Source project that has been made possible due to the generous contributions by our [sponsors and backers](https://vuetifyjs.com/introduction/sponsors-and-backers/). If you are interested in supporting this project, please consider:
+## 📚 Key Features Explained
 
-- [Requesting Enterprise Support](https://support.vuetifyjs.com/)
-- [Sponsoring John on Github](https://github.com/users/johnleider/sponsorship)
-- [Sponsoring Kael on Github](https://github.com/users/kaelwd/sponsorship)
-- [Supporting the team on Open Collective](https://opencollective.com/vuetify)
-- [Becoming a sponsor on Patreon](https://www.patreon.com/vuetify)
-- [Becoming a subscriber on Tidelift](https://tidelift.com/subscription/npm/vuetify)
-- [Making a one-time donation with Paypal](https://paypal.me/vuetify)
+### AI Chat
+The chat interface provides a real-time conversation experience with an AI assistant. Messages are saved to the backend, allowing conversations to persist between sessions.
 
-## 📑 License
-[MIT](http://opensource.org/licenses/MIT)
+### AI Image Generation
+Generate images from text prompts using AI models. The interface provides various customization options like dimensions, configuration scale, and more. You can also edit existing images by uploading them and applying AI transformations.
 
-Copyright (c) 2016-present Vuetify, LLC
+### Authentication
+The app includes a complete authentication system with login, registration, and token-based session management. Protected routes require authentication to access.
+
+### Responsive Design
+The application uses Vuetify's responsive grid system and includes a specialized bottom navigation for mobile devices, providing an optimized experience across all screen sizes.
+
+## 🔗 Backend Integration
+
+The application connects to a Ruby on Rails backend that provides:
+- User authentication via JWT
+- AI chat functionality
+- Image generation capabilities
+
+The API integration is managed through the `useAxios` composable, which provides a consistent interface for making API requests with authentication and error handling.
+
+## 🔧 Configuration
+
+The application can be configured by modifying the following files:
+- `vite.config.mjs` for build configuration
+- Environment variables for API endpoints and other settings
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+[MIT](LICENSE)
