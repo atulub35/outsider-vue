@@ -1,0 +1,23 @@
+{
+  "name": "outsider-vue",
+  "description": "Vue.js application",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_OPTIONS": {
+      "description": "Configure Node.js heap size and garbage collection",
+      "value": "--max-old-space-size=448 --optimize-for-size"
+    },
+    "NPM_CONFIG_PRODUCTION": {
+      "description": "Allow dev dependencies during build",
+      "value": "false"
+    },
+    "YARN_PRODUCTION": {
+      "description": "Allow dev dependencies during build",
+      "value": "false"
+    }
+  }
+} 

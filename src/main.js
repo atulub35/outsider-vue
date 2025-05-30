@@ -16,9 +16,9 @@ import { createVuetify } from 'vuetify'
 // import * as components from 'vuetify/components'
 // import * as directives from 'vuetify/directives'
 
-// Styles
-import 'unfonts.css'
-import '@mdi/font/css/materialdesignicons.css'
+// Styles - removed local font imports
+// import 'unfonts.css'
+// import '@mdi/font/css/materialdesignicons.css'
 
 const vuetify = createVuetify({
   // Use on-demand importing of components and directives
@@ -30,7 +30,16 @@ const vuetify = createVuetify({
     // Import only essential directives
   },
   theme: {
-    defaultTheme: 'light'
+    defaultTheme: 'light',
+    // Set Inter as the default font
+    themes: {
+      light: {
+        fontFamily: 'Inter, sans-serif',
+      },
+      dark: {
+        fontFamily: 'Inter, sans-serif',
+      }
+    }
   }
 })
 

@@ -5,7 +5,7 @@
  */
 
 // Styles
-import '@mdi/font/css/materialdesignicons.css'
+// import '@mdi/font/css/materialdesignicons.css' - Now using CDN version
 import 'vuetify/styles'
 
 // Composables
@@ -26,6 +26,7 @@ export default createVuetify({
           success: '#4CAF50',
           warning: '#FFC107',
         },
+        fontFamily: 'Inter, sans-serif',
       },
       dark: {
         colors: {
@@ -37,7 +38,11 @@ export default createVuetify({
           success: '#4CAF50',
           warning: '#FB8C00',
         },
+        fontFamily: 'Inter, sans-serif',
       },
     },
+  },
+  icons: {
+    defaultSet: 'mdi', // This tells Vuetify to still use MDI icons (from CDN)
   },
 })

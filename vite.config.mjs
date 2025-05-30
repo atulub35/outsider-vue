@@ -1,7 +1,7 @@
 // Plugins
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import Fonts from 'unplugin-fonts/vite'
+// import Fonts from 'unplugin-fonts/vite' - Removed as we're using CDN
 import Layouts from 'vite-plugin-vue-layouts-next'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
@@ -28,14 +28,7 @@ export default defineConfig({
       },
     }),
     Components(),
-    Fonts({
-      google: {
-        families: [{
-          name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }],
-      },
-    }),
+    // Fonts plugin removed as we're using CDN
     AutoImport({
       imports: [
         'vue',
@@ -125,13 +118,12 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     // Enable sourcemaps for production
     sourcemap: false,
-    // Minification options
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    // Minification options - use esbuild instead of terser to reduce memory usage
+    minify: 'esbuild',
+    // Reduce memory usage during build
+    assetsInlineLimit: 4096, // 4kb
+    emptyOutDir: true,
+    // Use smaller hash function to reduce memory usage
+    cssCodeSplit: true
   }
 })
