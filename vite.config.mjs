@@ -88,4 +88,50 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Configure chunking strategy
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Create a vendor chunk for node_modules
+          if (id.includes('node_modules')) {
+            if (id.includes('vuetify')) {
+              return 'vendor-vuetify';
+            } else if (id.includes('vue') || id.includes('router')) {
+              return 'vendor-vue';
+            } else {
+              return 'vendor'; // Other dependencies
+            }
+          }
+          
+          // Create separate chunks for large views/pages
+          if (id.includes('/views/') || id.includes('/pages/')) {
+            if (id.includes('Login') || id.includes('Register')) {
+              return 'auth';
+            } else if (id.includes('Chat')) {
+              return 'chat';
+            } else if (id.includes('Image') || id.includes('AIImage')) {
+              return 'image-gen';
+            }
+          }
+        },
+        // Limit chunk sizes
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+      }
+    },
+    // Set max chunk size for code splitting warnings
+    chunkSizeWarningLimit: 600,
+    // Enable sourcemaps for production
+    sourcemap: false,
+    // Minification options
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  }
 })

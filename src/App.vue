@@ -9,11 +9,12 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, defineAsyncComponent } from 'vue'
 import { useTheme } from 'vuetify'
 import { useRoute } from 'vue-router'
-import AppNavbar from '@/components/AppNavbar.vue'
-import AppBottomNav from './components/AppBottomNav.vue'
+// Use async component loading for better code splitting
+const AppNavbar = defineAsyncComponent(() => import('@/components/AppNavbar.vue'))
+const AppBottomNav = defineAsyncComponent(() => import('./components/AppBottomNav.vue'))
 
 const theme = useTheme()
 const route = useRoute()
