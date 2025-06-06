@@ -2,380 +2,254 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h3 mb-6">AI Image Generator</h1>
-        
-        <!-- Safety Check Alert -->
+        <div class="d-flex align-center mb-6">
+          <h1 class="text-h3">AI Image Generator</h1>
+          <v-spacer></v-spacer>
+          <v-btn 
+            color="primary" 
+            variant="flat" 
+            @click="tab = 'generate'"
+            v-if="tab === 'gallery'"
+          >
+            <v-icon start>mdi-plus</v-icon>
+            Generate Image
+          </v-btn>
+          <v-btn 
+            color="secondary" 
+            variant="flat" 
+            @click="tab = 'gallery'"
+            v-if="tab === 'generate'"
+          >
+            <v-icon start>mdi-image-multiple</v-icon>
+            View Gallery
+          </v-btn>
+        </div>
+
         <v-alert
-          v-if="safetyCheckFailed"
-          type="warning"
-          class="mb-6"
+          v-if="error"
+          type="error"
+          variant="tonal"
           closable
-          @click:close="safetyCheckFailed = false"
+          class="mb-6"
+          @click:close="error = null"
         >
-          {{ safetyCheckMessage }}
+          {{ error }}
         </v-alert>
 
-        <!-- Tabs -->
-        <v-tabs v-model="activeTab" class="mb-6">
-          <v-tab value="generate">Text to Image</v-tab>
-          <v-tab value="edit">Image to Image</v-tab>
-        </v-tabs>
+        <v-card v-if="tab === 'generate'" class="mb-6">
+          <v-card-title class="text-h5 py-4">
+            Generate Image with DALL-E 3
+          </v-card-title>
+          
+          <v-card-text>
+            <v-form @submit.prevent="generateImage">
+              <v-textarea
+                v-model="form.prompt"
+                label="Describe your image"
+                placeholder="Example: A serene Japanese garden with cherry blossoms, digital art style"
+                variant="outlined"
+                rows="3"
+                :error-messages="promptErrors"
+                required
+                :disabled="isLoading"
+                class="mb-4"
+                @input="validatePrompt"
+                @blur="validatePrompt"
+              ></v-textarea>
 
-        <!-- Generate Image Form -->
-        <v-window v-model="activeTab">
-          <v-window-item value="generate">
-            <v-card class="pa-6">
-              <v-form @submit.prevent="generateImage">
-                <v-textarea
-                  v-model="generateForm.prompt"
-                  label="Prompt"
-                  rows="3"
-                  placeholder="Describe the image you want to generate..."
-                  variant="outlined"
-                  class="mb-4"
-                  :rules="[v => !!v || 'Prompt is required']"
-                  required
-                ></v-textarea>
+              <v-expansion-panels variant="accordion" class="mb-4">
+                <v-expansion-panel>
+                  <v-expansion-panel-title>
+                    <div class="d-flex align-center">
+                      <v-icon class="mr-2">mdi-lightbulb-outline</v-icon>
+                      Example Prompts
+                    </div>
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
+                    <v-chip-group>
+                      <v-chip
+                        v-for="(prompt, i) in examplePrompts"
+                        :key="i"
+                        color="primary"
+                        variant="outlined"
+                        @click="useExamplePrompt(prompt)"
+                        class="ma-1"
+                      >
+                        {{ prompt.label }}
+                      </v-chip>
+                    </v-chip-group>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
 
-                <v-row>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="generateForm.width"
-                      label="Width"
-                      type="number"
-                      variant="outlined"
-                      min="320"
-                      max="1536"
-                      step="64"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="generateForm.height"
-                      label="Height"
-                      type="number"
-                      variant="outlined"
-                      min="320"
-                      max="1536"
-                      step="64"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="generateForm.cfg_scale"
-                      label="CFG Scale"
-                      type="number"
-                      variant="outlined"
-                      min="1"
-                      max="20"
-                      step="0.5"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="generateForm.steps"
-                      label="Steps"
-                      type="number"
-                      variant="outlined"
-                      min="10"
-                      max="50"
-                      step="1"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-
+              <v-card-actions class="pb-0 px-0">
+                <v-spacer></v-spacer>
                 <v-btn
                   type="submit"
                   color="primary"
-                  block
-                  :loading="isGenerating"
-                  :disabled="isGenerating || !generateForm.prompt"
+                  size="large"
+                  :loading="isLoading"
+                  :disabled="!isFormValid || isLoading"
                 >
-                  {{ isGenerating ? 'Generating...' : 'Generate Image' }}
-                </v-btn>
-              </v-form>
-            </v-card>
-          </v-window-item>
-
-          <!-- Edit Image Form -->
-          <v-window-item value="edit">
-            <v-card class="pa-6">
-              <v-form @submit.prevent="editImage">
-                <v-textarea
-                  v-model="editForm.prompt"
-                  label="Prompt"
-                  rows="3"
-                  placeholder="Describe how you want to edit the image..."
-                  variant="outlined"
-                  class="mb-4"
-                  :rules="[v => !!v || 'Prompt is required']"
-                  required
-                ></v-textarea>
-
-                <v-file-input
-                  v-model="editForm.image"
-                  label="Upload Image (Optional)"
-                  accept="image/*"
-                  variant="outlined"
-                  class="mb-4"
-                  @change="handleImageUpload"
-                  :hint="editForm.image ? 'Image uploaded' : 'Upload an image to modify it, or leave empty to generate from text only'"
-                  persistent-hint
-                ></v-file-input>
-
-                <v-row v-if="editForm.image">
-                  <v-col cols="12" sm="6">
-                    <v-slider
-                      v-model="editForm.image_strength"
-                      label="Image Strength"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      thumb-label
-                      :hint="'Higher values preserve more of the original image'"
-                      persistent-hint
-                    ></v-slider>
-                  </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="editForm.cfg_scale"
-                      label="CFG Scale"
-                      type="number"
-                      variant="outlined"
-                      min="1"
-                      max="20"
-                      step="0.5"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-row v-else>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="editForm.width"
-                      label="Width"
-                      type="number"
-                      variant="outlined"
-                      min="320"
-                      max="1536"
-                      step="64"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="editForm.height"
-                      label="Height"
-                      type="number"
-                      variant="outlined"
-                      min="320"
-                      max="1536"
-                      step="64"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-switch
-                  v-model="editForm.safety_checker"
-                  label="Enable Safety Checker"
-                  color="primary"
-                  class="mb-4"
-                  :hint="'Prevents generation of inappropriate content'"
-                  persistent-hint
-                ></v-switch>
-
-                <v-btn
-                  type="submit"
-                  color="primary"
-                  block
-                  :loading="isEditing"
-                  :disabled="isEditing || !editForm.prompt"
-                >
-                  {{ isEditing ? 'Processing...' : (editForm.image ? 'Edit Image' : 'Generate Image') }}
-                </v-btn>
-              </v-form>
-            </v-card>
-          </v-window-item>
-        </v-window>
-
-        <!-- Results -->
-        <v-row v-if="generatedImages.length > 0" class="mt-6">
-          <v-col cols="12">
-            <h2 class="text-h5 mb-4">Generated Images</h2>
-          </v-col>
-          <v-col
-            v-for="(image, index) in generatedImages"
-            :key="index"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-card>
-              <v-img
-                :src="'data:image/png;base64,' + image.base64"
-                :alt="'Generated image ' + (index + 1)"
-                height="300"
-                cover
-              ></v-img>
-              <v-card-actions>
-                <v-btn
-                  color="primary"
-                  block
-                  @click="downloadImage(image.base64, 'generated-image-' + (index + 1))"
-                >
-                  Download
+                  <v-icon start>mdi-creation</v-icon>
+                  Generate Image
                 </v-btn>
               </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
+
+        <!-- Recently Generated Image -->
+        <v-card v-if="tab === 'generate' && generatedImage" class="mb-6">
+          <v-card-title class="text-h5 py-4">
+            Generated Image
+          </v-card-title>
+          
+          <v-card-text class="text-center">
+            <v-img
+              :src="generatedImage.image_url"
+              max-height="600"
+              contain
+              class="mb-4"
+            ></v-img>
+            
+            <p class="text-body-1 text-medium-emphasis mb-2">
+              {{ generatedImage.prompt }}
+            </p>
+            
+            <v-btn
+              color="primary"
+              variant="text"
+              :href="generatedImage.image_url"
+              target="_blank"
+              prepend-icon="mdi-download"
+              class="mt-2"
+            >
+              Download Image
+            </v-btn>
+          </v-card-text>
+        </v-card>
+
+        <!-- Image Gallery Tab -->
+        <div v-if="tab === 'gallery'">
+          <v-card class="mb-6" variant="flat">
+            <v-card-title class="text-h5 py-4">
+              Your Image Gallery
+            </v-card-title>
+          </v-card>
+          
+          <ImageGallery 
+            :images="images" 
+            :loading="isLoadingGallery"
+            @refresh="fetchImages"
+          />
+        </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import axios from 'axios'
+import { ref, onMounted, computed } from 'vue';
+import ImageGallery from '@/components/ImageGallery.vue';
+import { useAxios } from '@/composables/useAxios';
 
-const activeTab = ref('generate')
-const isGenerating = ref(false)
-const isEditing = ref(false)
-const generatedImages = ref([])
-const safetyCheckFailed = ref(false)
-const safetyCheckMessage = ref('')
-const error = ref(null)
+// Setup API client
+const { apiGet, apiPost, apiDelete, errorMessage, showError } = useAxios();
 
-const generateForm = reactive({
-  prompt: '',
-  width: 512,
-  height: 512,
-  cfg_scale: 7,
-  steps: 30,
-  samples: 1
-})
+// State
+const tab = ref('generate');
+const form = ref({
+  prompt: ''
+});
+const promptErrors = ref([]);
+const images = ref([]);
+const generatedImage = ref(null);
+const isLoading = ref(false);
+const isLoadingGallery = ref(false);
+const error = ref(null);
 
-const editForm = reactive({
-  image: null,
-  prompt: '',
-  image_strength: 0.35,
-  cfg_scale: 7,
-  steps: 30,
-  samples: 1,
-  width: 512,
-  height: 512
-})
+// Computed property for form validity
+const isFormValid = computed(() => {
+  return form.value.prompt.trim() !== '' && promptErrors.value.length === 0;
+});
 
-const handleImageUpload = (event) => {
-  if (event.target.files && event.target.files[0]) {
-    editForm.image = event.target.files[0]
+// Example prompts
+const examplePrompts = [
+  { label: 'Magical Forest', text: 'A magical forest at night with glowing mushrooms and fireflies, fantasy art style' },
+  { label: 'Futuristic City', text: 'A futuristic cityscape with flying cars and neon lights, cyberpunk style' },
+  { label: 'Beach Sunset', text: 'A peaceful beach sunset with palm trees and gentle waves, watercolor style' },
+  { label: 'Mountain Landscape', text: 'A majestic mountain landscape with snow peaks and a lake reflection, oil painting style' },
+  { label: 'Space Station', text: 'An orbital space station with Earth in the background, digital art' }
+];
+
+// Validation methods
+const validatePrompt = () => {
+  promptErrors.value = [];
+  if (!form.value.prompt || form.value.prompt.trim() === '') {
+    promptErrors.value.push('Prompt is required');
   }
-}
+};
+
+// Methods
+const useExamplePrompt = (prompt) => {
+  form.value.prompt = prompt.text;
+  validatePrompt();
+};
+
+const fetchImages = async () => {
+  isLoadingGallery.value = true;
+  error.value = null;
+  
+  try {
+    const response = await apiGet('/api/images');
+    if (response && response.data && response.data.images) {
+      images.value = response.data.images;
+    }
+  } catch (err) {
+    console.error('Error fetching images:', err);
+    error.value = 'Failed to load images. Please try again later.';
+  } finally {
+    isLoadingGallery.value = false;
+  }
+};
 
 const generateImage = async () => {
+  // Manual validation
+  validatePrompt();
+  
+  if (!isFormValid.value) {
+    error.value = 'Please provide a description for your image';
+    return;
+  }
+  
+  isLoading.value = true;
+  error.value = null;
+
   try {
-    isGenerating.value = true
-    error.value = null
-    safetyCheckFailed.value = false
-    safetyCheckMessage.value = ''
-
-    const response = await axios({
-      method: 'post',
-      url: 'https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer sk-h4QbQ0KogqDZiataqDQTssRonjufHfEcevJ8fneU6oyelI4R'
-      },
-      data: {
-        text_prompts: [
-          {
-            text: generateForm.prompt,
-            weight: 1
-          }
-        ],
-        cfg_scale: generateForm.cfg_scale,
-        height: generateForm.height,
-        width: generateForm.width,
-        samples: generateForm.samples,
-        steps: generateForm.steps
-      }
-    })
-
-    if (response.data.safety_checker?.flagged) {
-      safetyCheckFailed.value = true
-      safetyCheckMessage.value = response.data.safety_checker.message
-      return
-    }
-
-    if (response.data.artifacts && response.data.artifacts.length > 0) {
-      generatedImages.value = response.data.artifacts
-    }
-  } catch (err) {
-    console.error('Generate Image Error:', err)
-    if (err.response?.data?.name === 'content_moderation') {
-      safetyCheckFailed.value = true
-      safetyCheckMessage.value = err.response.data.message
+    const response = await apiPost('/api/images', { prompt: form.value.prompt });
+    
+    if (response && response.data) {
+      generatedImage.value = response.data;
+      // Refresh gallery data after generating a new image
+      fetchImages();
     } else {
-      error.value = err.response?.data?.message || err.message || 'Failed to generate image'
-    }
-  } finally {
-    isGenerating.value = false
-  }
-}
-
-const editImage = async () => {
-  try {
-    isEditing.value = true
-    error.value = null
-    safetyCheckFailed.value = false
-    safetyCheckMessage.value = ''
-
-    if (!editForm.image) {
-      error.value = 'Please select an image first'
-      return
-    }
-
-    const formData = new FormData()
-    formData.append('init_image', editForm.image)
-    formData.append('text_prompts[0][text]', editForm.prompt)
-    formData.append('text_prompts[0][weight]', '1')
-    formData.append('image_strength', editForm.image_strength.toString())
-    formData.append('cfg_scale', editForm.cfg_scale.toString())
-    formData.append('samples', editForm.samples.toString())
-    formData.append('steps', editForm.steps.toString())
-
-    const response = await axios({
-      method: 'post',
-      url: 'https://api.stability.ai/v1/generation/stable-diffusion-v1-6/image-to-image',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer sk-h4QbQ0KogqDZiataqDQTssRonjufHfEcevJ8fneU6oyelI4R'
-      },
-      data: formData
-    })
-
-    if (response.data.artifacts && response.data.artifacts.length > 0) {
-      generatedImages.value = response.data.artifacts
+      throw new Error('Invalid response from server');
     }
   } catch (err) {
-    console.error('Edit Image Error:', err)
-    error.value = err.response?.data?.message || err.message || 'Failed to edit image'
+    console.error('Error generating image:', err);
+    const errorMsg = err.response?.data?.status?.message || 'Failed to generate image. Please try again.';
+    error.value = errorMsg;
   } finally {
-    isEditing.value = false
+    isLoading.value = false;
   }
-}
+};
 
-const downloadImage = (base64, filename) => {
-  const link = document.createElement('a')
-  link.href = 'data:image/png;base64,' + base64
-  link.download = filename + '.png'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
+// Initialize validation on mount
+onMounted(() => {
+  fetchImages();
+  validatePrompt();
+});
 </script>
 
 <style scoped>

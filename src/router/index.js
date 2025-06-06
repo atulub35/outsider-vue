@@ -39,6 +39,12 @@ const router = createRouter({
       name: 'generate-image',
       component: () => import('../pages/AIImageGenerator.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../pages/ProfilePage.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
