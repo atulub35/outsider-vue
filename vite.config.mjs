@@ -71,6 +71,15 @@ export default defineConfig({
     port: 3002,
     host: '0.0.0.0',
   },
+  preview: {
+    port: process.env.PORT || 3002,
+    host: '0.0.0.0',
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      '.herokuapp.com'
+    ]
+  },
   css: {
     preprocessorOptions: {
       sass: {
